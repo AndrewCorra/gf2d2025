@@ -1,5 +1,9 @@
 #include "simple_logger.h"
 #include "entity.h"
+#include "gf2d_collision.h"
+#include "gf2d_draw.h"
+#include "world.h"
+#include "camera.h"
 
 typedef struct {
 	Entity* entity_list;
@@ -116,4 +120,49 @@ void entity_system_draw() {
 		if (!_entity_manager.entity_list[i]._inuse)continue; //skip inactive entities
 		entity_draw(&_entity_manager.entity_list[i]);
 	}
+}
+
+Collision entity_scan_hit(Entity* self, Vector2D start, Vector2D end, CollisionFilter filter)
+{
+	Collision c = { 0 };
+	if (!self)return c;
+	filter.ignore = &self->body;
+	c = gf2d_collision_trace_space(world_get_space(), start, end, filter);
+	gf2d_draw_shape(gfc_shape_edge(start.x, start.y, end.x, end.y), gfc_color(255, 255, 0, 255), camera_get_offset());
+	return c;
+}
+
+int entity_wall_check(Entity* self, Vector2D dir)
+{
+	Shape s;
+	int i, count;
+	Collision* c;
+	List* collisionList;
+	CollisionFilter filter = {
+		1,
+		WORLD_LAYER,
+		0,
+		0,
+		&self->body
+	};
+
+	if (!self)return 0;
+	s = gf2d_body_to_shape(&self->body);
+	gfc_shape_move(&s, dir);
+
+	collisionList = gf2d_collision_check_space_shape(world_get_space(), s, filter);
+	if (collisionList != NULL)
+	{
+		count = gfc_list_get_count(collisionList);
+		for (i = 0; i < count; i++)
+		{
+			c = (Collision*)gfc_list_get_nth(collisionList, i);
+			if (!c)continue;
+			if (!c->shape)continue;
+			gf2d_draw_shape(*c->shape, gfc_color(255, 255, 0, 255), camera_get_offset());
+		}
+		gf2d_collision_list_free(collisionList);
+		return 1;
+	}
+	return 0;
 }

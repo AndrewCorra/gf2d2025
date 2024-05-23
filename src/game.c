@@ -5,20 +5,25 @@
 #include "gf2d_sprite.h"
 #include "entity.h"
 #include "world.h"
+#include "camera.h"
 #include "entity.h"
+#include "player.h"
+#include "SpiderBase.h"
+
 
 int main(int argc, char * argv[])
 {
     /*variable declarations*/
     int done = 0;
-    const Uint8 * keys;
-    Sprite *sprite;
+    const Uint8 * keys; 
     World *world;
     
     int mx,my;
     float mf = 0;
     Sprite *mouse;
     Color mouseColor = gfc_color8(255,100,255,200);
+    Entity *player;
+    Entity* spider;
     
     /*program initializtion*/
     init_logger("gf2d.log",0);
@@ -35,15 +40,17 @@ int main(int argc, char * argv[])
     gf2d_sprite_init(1024);
     entity_system_initialize(1024);
     SDL_ShowCursor(SDL_DISABLE);
+    camera_set_size(vector2d(1200, 720));
+
     
     /*demo setup*/
-    sprite = gf2d_sprite_load_image("images/backgrounds/bg_flat.png");
-    slog("sprite loaded");
     mouse = gf2d_sprite_load_all("images/pointer.png",32,32,16,0);
+    player = player_new();
     slog("mouse loaded");
-
+    spider = spider_new();
     world = world_test_new();
     slog("world loaded");
+    world_setup_camera(world);
     /*main game loop*/
     while(!done)
     {
@@ -56,12 +63,15 @@ int main(int argc, char * argv[])
 
         entity_system_think();
         entity_system_update();
+
         
         gf2d_graphics_clear_screen();// clears drawing buffers
         // all drawing should happen betweem clear_screen and next_frame
             //backgrounds drawn first
            // gf2d_sprite_draw_image(sprite,vector2d(0,0));
+
         world_draw(world);
+
             entity_system_draw();
             //UI elements last
             gf2d_sprite_draw(
@@ -79,6 +89,7 @@ int main(int argc, char * argv[])
         if (keys[SDL_SCANCODE_ESCAPE])done = 1; // exit condition
         //slog("Rendering at %f FPS",gf2d_graphics_get_frames_per_second());
     }
+    entity_free(player);
     world_free(world);
     slog("---==== END ====---");
     return 0;

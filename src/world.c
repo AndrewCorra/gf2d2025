@@ -5,6 +5,65 @@
 
 
 #include "world.h"
+#include "camera.h"
+
+void world_tile_layer_build(World* world)
+{
+	int i, j;
+	Vector2D position;
+	Uint32 frame;
+	Uint32 index;
+	if (!world)return;
+
+	if (!world->tileset)return;
+
+	if (world->tileLayer)
+	{
+		gf2d_sprite_free(world->tileLayer);
+	}
+
+	world->tileLayer = gf2d_sprite_new();
+
+	world->tileLayer->surface = gf2d_graphics_create_surface(
+		world->tileWidth * world->tileset->frame_w,
+		world->tileHeight * world->tileset->frame_h);
+
+	world->tileLayer->frame_w = world->tileWidth * world->tileset->frame_w;
+	world->tileLayer->frame_h = world->tileHeight * world->tileset->frame_h;
+
+	if (!world->tileLayer->surface)
+	{
+		slog("failed to create tileLayer surface");
+		return;
+	}
+
+	for (j = 0; j < world->tileHeight; j++)
+	{
+		for (i = 0; i < world->tileWidth; i++)
+		{
+			index = i + (j * world->tileWidth);
+			if (world->tilemap[index] == 0)continue;
+
+			position.x = i * world->tileset->frame_w;
+			position.y = j * world->tileset->frame_h;
+			frame = world->tilemap[index] - 1;
+
+			gf2d_sprite_draw_to_surface(
+				world->tileset,
+				position,
+				NULL,
+				NULL,
+				frame,
+				world->tileLayer->surface);
+		}
+	}
+	world->tileLayer->texture = SDL_CreateTextureFromSurface(gf2d_graphics_get_renderer(), world->tileLayer->surface);
+	if (!world->tileLayer->texture)
+	{
+		slog("failed to convert world tile layer to texture");
+		return;
+	}
+}
 
 World *world_test_new() {
 	int i;
@@ -53,6 +112,7 @@ void world_free(World* world) {
 	if (!world)return;
 	gf2d_sprite_free(world->background);
 	gf2d_sprite_free(world->tileset);
+	gf2d_space_free(world->space);
 	free(world->tilemap);
 	free(world);
 }
@@ -82,4 +142,21 @@ void world_draw(World* world) {
 				frame);
 		}
 	}
+}
+
+void world_setup_camera(World* world)
+{
+	if (!world)return;
+	if ((!world->tileLayer) || (!world->tileLayer->surface))
+	{
+		slog("no tile layer set for world");
+		return;
+	}
+	camera_set_bounds(gfc_rect(0, 0, world->tileLayer->surface->w, world->tileLayer->surface->h));
+	camera_apply_bounds();
+	camera_enable_binding(1);
+}
+
+Space* world_get_space() {
+	return gameWorld.space;
 }
