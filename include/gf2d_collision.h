@@ -8,6 +8,8 @@
 #include "gf2d_space.h"
 
 #include "gf2d_body.h"
+//#include "gf2d_dynamic_body.h"
+
 
 #define ALL_LAYERS 0xffffffff
 #define WORLD_LAYER 1
@@ -78,6 +80,6 @@ List* gf2d_collision_check_space_shape(Space* space, Shape shape, CollisionFilte
  * @param filter the filter to apply to the test
  * @return a collision structure.  Note the timeStep will be the percentage of the trace that was completed before a collision was triggered
  */
-Collision gf2d_collision_trace_space(Space* space, Vector2D start, Vector2D end, CollisionFilter filter);
+Collision gf2d_collision_trace_space(Space *space, Vector2D start, Vector2D end, CollisionFilter filter);
 
 #endif

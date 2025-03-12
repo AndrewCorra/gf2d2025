@@ -2,6 +2,7 @@
 #include "simple_logger.h"
 
 #include "gf2d_graphics.h"
+#include "gf2d_draw.h"
 
 
 #include "world.h"
@@ -118,10 +119,12 @@ void world_free(World* world) {
 }
 
 void world_draw(World* world) {
+	Vector2D camera;
 	int i, j;
 	Uint32 frame = 1;
 	int index;
 	Vector2D position;
+	camera = camera_get_offset();
 	if (!world)return;
 	gf2d_sprite_draw_image(world->background, vector2d(0, 0));
 	if (!world->tileset)return;
@@ -131,6 +134,7 @@ void world_draw(World* world) {
 			position.x = i * world->tileset->frame_w;
 			position.y = i * world->tileset->frame_h;
 			if (world->tilemap[index] == 0) continue;
+			
 			gf2d_sprite_draw(
 				world->tileset,
 				position,
@@ -159,4 +163,27 @@ void world_setup_camera(World* world)
 
 Space* world_get_space() {
 	return gameWorld.space;
+}
+
+int worlds_bounds_test(World* world, Shape shape) {
+	Rect boundingRect;
+	if ((!world) || (!world->tileset)) return 0;
+	boundingRect = gfc_shape_get_bounds(shape);
+}
+void world_draw_bounds(World* world) {
+
+	Rect rect = { 0,0,64,64 };
+	Shape test;
+	Uint8 tileIndex;
+	int i, j;
+	if (!world)return;
+	for (j = 0; j < world->tileHeight; j++) {
+		for (i = 0; i < world->tileWidth; i++) {
+			tileIndex = world->tilemap[i + j * world->tileWidth];
+			if (tileIndex == 0)continue;
+			rect.x = i * 64;
+			rect.y = j * 64;
+			gf2d_draw_rect(rect, gfc_color(255, 0, 0, 255));
+		}
+	}
 }

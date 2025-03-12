@@ -4,6 +4,8 @@
 #include "player.h"
 #include "gf2d_body.h"
 #include "gf2d_collision.h"
+#include "gf2d_draw.h"
+
 
 typedef struct
 {
@@ -34,7 +36,7 @@ Entity* player_new()
         0);
     self->frame = 0;
     self->position = vector2d(0, 0);
-
+	self->bounds = vector4d(self->position.x, self->position.y, 56, 56);
     self->think = player_think;
     self->update = player_update;
     self->free = player_free;
@@ -106,6 +108,7 @@ void player_think(Entity* self)
     if (self->position.x > mx)dir.x = -1;
     if (self->position.y > my)dir.y = -1;
     */
+
     vector2d_normalize(&dir);
     vector2d_scale(self->velocity, dir, 3);
 }

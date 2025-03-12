@@ -6,7 +6,6 @@
 #include "entity.h"
 #include "world.h"
 #include "camera.h"
-#include "entity.h"
 #include "player.h"
 #include "SpiderBase.h"
 
@@ -24,6 +23,8 @@ int main(int argc, char * argv[])
     Color mouseColor = gfc_color8(255,100,255,200);
     Entity *player;
     Entity* spider;
+    extern EntityManager _entity_manager;
+
     
     /*program initializtion*/
     init_logger("gf2d.log",0);
@@ -71,8 +72,12 @@ int main(int argc, char * argv[])
            // gf2d_sprite_draw_image(sprite,vector2d(0,0));
 
         world_draw(world);
-
-            entity_system_draw();
+        world_draw_bounds(world);
+        entity_system_draw();
+        for (int i = 0; i < _entity_manager.entity_max; i++) {
+                if (!_entity_manager.entity_list[i]._inuse)continue; //skip inactive entities
+                entity_hitbox_draw(&_entity_manager.entity_list[i]);
+            }
             //UI elements last
             gf2d_sprite_draw(
                 mouse,

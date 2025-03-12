@@ -46,6 +46,7 @@ Entity* spider_new() {
     }
     self->frame = 0;
     self->position = vector2d(500, -50);
+    self->bounds = vector4d(self->position.x, self->position.y, 567, 567);
     data = gfc_allocate_array(sizeof(SpiderData), 1);
 
     spiderLeg1 = leg_new(self, bright, 0);
@@ -70,7 +71,6 @@ Entity* spider_new() {
 }	
 
 void spider_think(Entity* self) {
-
 }
 void spider_update(Entity* self) {
 

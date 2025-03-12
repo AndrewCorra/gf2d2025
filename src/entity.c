@@ -2,16 +2,14 @@
 #include "entity.h"
 #include "gf2d_collision.h"
 #include "gf2d_draw.h"
+#include "gfc_vector.h"
 #include "world.h"
 #include "camera.h"
+#include "gf2d_graphics.h"
 
-typedef struct {
-	Entity* entity_list;
-	Uint32 entity_max;
-}EntityManager;
-void entity_system_close();
 
-static EntityManager _entity_manager = { 0 }; /**<initalize a LOCAL global entity manager*/
+EntityManager _entity_manager = { 0 }; /**<initalize a LOCAL global entity manager*/
+
 
 void entity_system_initialize(Uint32 max) {
 	if (_entity_manager.entity_list) {
@@ -99,7 +97,9 @@ void entity_system_update()
 }
 
 void entity_draw(Entity *self) {
+	Vector2D camera, position;
 	if (!self)return;
+	camera = camera_get_offset();
 	if (self->sprite) {
 		gf2d_sprite_render(
 			self->sprite,
@@ -132,6 +132,28 @@ Collision entity_scan_hit(Entity* self, Vector2D start, Vector2D end, CollisionF
 	return c;
 }
 
+void entity_update_position(Entity* self) {
+	Vector2D screen;
+
+	if (!self)return;
+	vector2d_normalize(&self->velocity);
+	// vector2d_scale(&self->velocity, &self->velocity, 10);
+	screen = gf2d_graphics_get_resolution();
+	vector2d_add(self->position, self->position, self->velocity);
+	if (self->position.x + self->bounds.x < 0)self->position.x = 0 - self->bounds.x;
+	if (self->position.y + self->bounds.y < 0)self->position.y = 0 - self->bounds.y;
+	if (self->position.x + self->bounds.x > screen.x)self->position.x = screen.x - self->bounds.x;
+	if (self->position.y + self->bounds.y > screen.y)self->position.y = screen.y - self->bounds.y;
+	self->bounds.x = self->position.x;;
+	self->bounds.y = self->position.y;
+}
+
+int entity_layer_check(Entity* self, EntityCollisionLayer layer) {
+
+	if (!self)return 0;
+	return self->collisionLayer & layer;
+}
+
 int entity_wall_check(Entity* self, Vector2D dir)
 {
 	Shape s;
@@ -149,7 +171,6 @@ int entity_wall_check(Entity* self, Vector2D dir)
 	if (!self)return 0;
 	s = gf2d_body_to_shape(&self->body);
 	gfc_shape_move(&s, dir);
-
 	collisionList = gf2d_collision_check_space_shape(world_get_space(), s, filter);
 	if (collisionList != NULL)
 	{
@@ -163,6 +184,24 @@ int entity_wall_check(Entity* self, Vector2D dir)
 		}
 		gf2d_collision_list_free(collisionList);
 		return 1;
+	}
+	return 0;
+}
+
+
+void entity_hitbox_draw(Entity* self) {
+//	Collision c;
+//	CollisionFilter filter = { 0 };
+	Rect box = { self->position.x, self->position.y, self->bounds.z, self->bounds.w };
+	if (!self) return 0;
+	Color ye = gfc_color(255, 255, 252, 255);
+	Color ne = gfc_color(0, 0, 252, 255);
+//	c = gf2d_collision_trace_space(world_get_space(), self->position, self->position, filter);
+	if (entity_wall_check(self, self->velocity)) {
+		gf2d_draw_rect(box, ne);
+	 }
+	else {
+		gf2d_draw_rect(box, ye);
 	}
 	return 0;
 }

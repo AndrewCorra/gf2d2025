@@ -52,9 +52,9 @@ Collision* gf2d_dynamic_body_bounds_collision_check(DynamicBody* dba, Rect bound
     return collision;
 }
 
-Collision* gf2d_dynamic_body_shape_collision_check(DynamicBody* dba, Shape* shape, float timeStep)
+Collision *gf2d_dynamic_body_shape_collision_check(DynamicBody* dba, Shape* shape, float timeStep)
 {
-    Collision* collision = NULL;
+    Collision *collision = NULL;
     if (!dba)return NULL;
     if ((!dba->body) || (!shape))
     {
@@ -76,9 +76,9 @@ Collision* gf2d_dynamic_body_shape_collision_check(DynamicBody* dba, Shape* shap
     return collision;
 }
 
-Collision* gf2d_dynamic_body_collision_check(DynamicBody* dba, DynamicBody* dbb, float timeStep)
+Collision *gf2d_dynamic_body_collision_check(DynamicBody* dba, DynamicBody* dbb, float timeStep)
 {
-    Collision* collision = NULL;
+    Collision *collision = NULL;
     if ((!dba) || (!dbb))return NULL;
     if ((!dba->body) || (!dbb->body))
     {

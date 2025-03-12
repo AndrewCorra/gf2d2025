@@ -37,6 +37,7 @@ Entity* leg_new(Entity* base, Vector2D offsets, int dir) {
     }
     self->frame = 0;
     self->position = vector2d(base->position.x + offsets.x, base->position.y + offsets.y);
+    self->bounds = vector4d(self->position.x, self->position.y, 128, 128);
     self->think = leg_think;
     self->update = leg_think;
     self->free = leg_think;
@@ -56,6 +57,7 @@ void leg_think(Entity* self) {
 }
 
 void leg_update(Entity* self) {
+    entity_hitbox_draw(self);
 
 }
 

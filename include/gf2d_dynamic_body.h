@@ -3,6 +3,7 @@
 
 #include "gf2d_body.h"
 #include "gf2d_collision.h"
+#include <gf2d_collision.h>
 
 typedef struct
 {
@@ -48,7 +49,7 @@ void gf2d_dynamic_body_update(DynamicBody* db, float factor);
  * @param timeStep the time segment for the current update round
  * @return NULL on error or no collision, a pointer to the collision data otherwise
  */
-Collision* gf2d_dynamic_body_collision_check(DynamicBody* dba, DynamicBody* dbb, float timeStep);
+Collision *gf2d_dynamic_body_collision_check(DynamicBody* dba, DynamicBody* dbb, float timeStep);
 
 /**
  * @brief check if a dynamic body is clipping an arbitrary shape
@@ -58,7 +59,7 @@ Collision* gf2d_dynamic_body_collision_check(DynamicBody* dba, DynamicBody* dbb,
  * @param timeStep the time segment for the current update round
  * @return NULL on error or no collision, a pointer to the collision data otherwise
  */
-Collision* gf2d_dynamic_body_shape_collision_check(DynamicBody* dba, Shape* shape, float timeStep);
+Collision *gf2d_dynamic_body_shape_collision_check(DynamicBody* dba, Shape* shape, float timeStep);
 
 /**
  * @brief check if a dynamic body is clipping the bounds of a space
@@ -68,7 +69,7 @@ Collision* gf2d_dynamic_body_shape_collision_check(DynamicBody* dba, Shape* shap
  * @param timeStep the time segment for the current update round
  * @return NULL on error or no collision, a pointer to the collision data otherwise
  */
-Collision* gf2d_dynamic_body_bounds_collision_check(DynamicBody* dba, Rect bounds, float timeStep);
+Collision *gf2d_dynamic_body_bounds_collision_check(DynamicBody* dba, Rect bounds, float timeStep);
 
 /**
  * @brief calculate a bounce vector for the given dynamic body based on the provided normal

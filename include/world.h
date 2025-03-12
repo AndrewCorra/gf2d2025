@@ -38,4 +38,6 @@ void world_draw(World* world);
 void world_setup_camera(World* world);
 
 Space* world_get_space();
+
+void world_draw_bounds(World* world);
 #endif

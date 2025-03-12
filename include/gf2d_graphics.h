@@ -120,6 +120,12 @@ SDL_Surface *gf2d_graphics_get_render();
  */
 void gf2d_graphics_save_screenshot(const char *filename);
 
+/**
+ * @brief get the current rendering resolution
+ */
+Vector2D gf2d_graphics_get_resolution();
+
+
 
 
 #endif
